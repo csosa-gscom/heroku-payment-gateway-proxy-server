@@ -1,0 +1,28 @@
+<script>
+    console.log("SCRIPT LOADED");
+    function salesRequestMerchant(){
+
+        var myHeaders = new Headers();
+myHeaders.append("Content-Type", "text/xml");
+
+var raw = "{{body}}";
+
+var requestOptions = {
+		method: 'POST',
+		headers: myHeaders,
+		body: raw,
+		redirect: 'follow'
+};
+
+fetch("https://payment-gateway-proxy-server.herokuapp.com/send-xml", requestOptions)
+		.then(response => response.text())
+		.then(result => console.log(result))
+		.catch(error => console.log('error', error));
+
+
+    }
+
+</script>
+
+<h1>API CALL TEST</h1>
+<button style="padding: 10px;" onclick="salesRequestMerchant()">CLICK ME</button>
