@@ -108,7 +108,8 @@ const parser = new xml2js.Parser();
 const port = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ['https://gs-com.bz', 'https://digiwallet-script-test.myshopify.com']
+  origin: ['*'],
+  methods: ['GET', 'POST']
 };
 
 app.use(cors(corsOptions));
