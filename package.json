@@ -1,0 +1,26 @@
+{
+  "name": "heroku-payment-gateway-proxy-server",
+  "version": "1.0.0",
+  "description": "NodeJS Proxy Server Hosted on Heroku",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csosa-gscom/heroku-payment-gateway-proxy-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csosa-gscom/heroku-payment-gateway-proxy-server/issues"
+  },
+  "homepage": "https://github.com/csosa-gscom/heroku-payment-gateway-proxy-server#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node":"18.15.0"
+  }
+}
