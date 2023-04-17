@@ -2,7 +2,8 @@
 // const cors = require('cors'); //CORS Policy
 // const axios = require('axios'); //HTTP client for JavaScript.
 // const xml2js = require('xml2js'); //xml parser
-// const bodyParser = require('body-parser'); //
+// const bodyParser = require('body-parser'); 
+// const CryptoJS = require("crypto-js");
 
 
 // const app = express();
@@ -35,10 +36,17 @@
 //       res.status(500).send('An error occurred while parsing the request.');
 //     } else {
 //       // Modify the object properties as desired
-//       result.TCSRequest.UserName = '501203278252';
-//       result.TCSRequest.Password = '052004';
-//       result.TCSRequest.Function[0].Param1 = '977';
-//       result.TCSRequest.Function[0].Param6 = '5012235128';
+//       if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTEXECTOSELF'){
+//         result.TCSRequest.UserName = '501203278252';
+//         result.TCSRequest.Password = '052004';
+//       } else if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTMERCHANT_OTP') {
+//         result.TCSRequest.UserName = '501203278252';
+//         result.TCSRequest.Password = '052004';
+//         result.TCSRequest.Function[0].Param1 = '977';
+
+//         result.TCSRequest.Function[0].Param6 = '5012235128';
+//       }
+
 
 //       // Convert the object back into XML
 //       const builder = new xml2js.Builder();
@@ -72,7 +80,8 @@ const express = require("express"); // http framework
 const cors = require('cors'); //CORS Policy
 const axios = require('axios'); //HTTP client for JavaScript.
 const xml2js = require('xml2js'); //xml parser
-const bodyParser = require('body-parser'); //
+const bodyParser = require('body-parser'); 
+const CryptoJS = require("crypto-js");
 
 
 const app = express();

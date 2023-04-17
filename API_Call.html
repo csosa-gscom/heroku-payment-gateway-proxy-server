@@ -2,22 +2,22 @@
     console.log("SCRIPT LOADED");
     function salesRequestMerchant(){
 		var myHeaders = new Headers();
-myHeaders.append("Content-Type", "text/xml");
+		myHeaders.append("Content-Type", "text/xml");
 
-var raw = "<?xml version=\"1.0\"?>\r\n<TCSRequest>\r\n<UserName>501203278252</UserName>\r\n<TerminalType>API</TerminalType>\r\n<Password>052004</Password>\r\n<Function name=\"SALESREQUESTMERCHANT_OTP\">\r\n<Param1>977</Param1>\r\n<Param2>2.24</Param2>\r\n<Param4>5016132871</Param4>\r\n<Param6>5012235128</Param6>\r\n</Function>\r\n</TCSRequest>";
+		var raw = "<?xml version=\"1.0\"?>\r\n<TCSRequest>\r\n<UserName>501203278252</UserName>\r\n<TerminalType>API</TerminalType>\r\n<Password>052004</Password>\r\n<Function name=\"SALESREQUESTMERCHANT_OTP\">\r\n<Param1>977</Param1>\r\n<Param2>2.24</Param2>\r\n<Param4>5016132871</Param4>\r\n<Param6>5012235128</Param6>\r\n</Function>\r\n</TCSRequest>";
 
-var requestOptions = {
-		method: 'POST',
-		headers: myHeaders,
-		body: raw,
-		redirect: 'follow'
-};
+		var requestOptions = {
+				method: 'POST',
+				headers: myHeaders,
+				body: raw,
+				redirect: 'follow'
+		};
 
-fetch("https://payment-gateway-proxy-server.herokuapp.com/send-xml", requestOptions)
-		.then(response => response.text())
-		.then(result => console.log(result))
-		.catch(error => console.log('error', error));
-	}
+		fetch("https://payment-gateway-proxy-server.herokuapp.com/send-xml", requestOptions)
+				.then(response => response.text())
+				.then(result => console.log(result))
+				.catch(error => console.log('error', error));
+			}
 
 </script>
 
