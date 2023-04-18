@@ -32,6 +32,11 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); 
 
+// Create a root endpoint
+app.get('/', (req, res) => {
+  res.status(200).send('Server is up and running');
+});
+
 app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
   const data = req.body;
 
