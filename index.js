@@ -149,6 +149,11 @@ app.post('/send-xml', (req, res) => {
   });
 });
 
+app.post('/authorization', (req, res) => {
+  console.log('working');
+});
+
+
 
 let port = process.env.PORT || 3000;
 app.listen(port, () => {
