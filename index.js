@@ -34,7 +34,7 @@ app.use(cors(corsOptions));
 
 // Create a root endpoint
 app.get('/', (req, res) => {
-  res.status(200).send('Server is up and running');
+  res.send('Welcome to Ekyash + Digiwallet Proxy Server');
 });
 
 app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
