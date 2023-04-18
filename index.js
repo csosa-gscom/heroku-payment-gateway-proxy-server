@@ -82,6 +82,7 @@
 //Server is able to take in both json and xml request 
 const express = require("express");
 const cors = require('cors');
+const allowedOrigins = ['https://gs-com.bz/', 'https://digiwallet-payment-enabled.myshopify.com']
 const axios = require('axios');
 const xml2js = require('xml2js');
 const bodyParser = require('body-parser');
@@ -106,8 +107,18 @@ const ekyashSID = '4951091037';
 
 // The cors() middleware function sets the Access-Control-Allow-Origin header to * (which allows requests from any origin), 
 //and it also sets other headers such as Access-Control-Allow-Methods and Access-Control-Allow-Headers to enable various types of HTTP requests.
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST']
+};
 
-app.use(cors()); //used to enable CORS for the Express application, which allows the client-side code to make requests to the server-side code from different domains.
+app.use(cors(corsOptions)); //used to enable CORS for the Express application, which allows the client-side code to make requests to the server-side code from different domains.
 
 // middleware to parse XML requests
 //app.use(bodyParser.raw({ type: 'text/xml' }));
