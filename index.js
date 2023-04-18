@@ -160,42 +160,45 @@ app.post('/authorization', bodyParser.json(), (req, res) => {
   const mobileNumber = req.body.mobile;
   const jwtToken = generateJwtToken(mobileNumber);
 
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Accept-Language", "en");
-  myHeaders.append("The-Timezone-IANA", "Belize");
-  myHeaders.append("WL", "bibi");
-  myHeaders.append("IMIE", "APPKEY17-07A8-4BAF-AA0F-B1568C5017A3");
-  myHeaders.append("appVersion", "99.1.1");
-  myHeaders.append("operatingSystem", "Android");
-  myHeaders.append("Authorization", `Bearer ${jwtToken}`);
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept-Language": "en",
+    "The-Timezone-IANA": "Belize",
+    "WL": "bibi",
+    "IMIE": "APPKEY17-07A8-4BAF-AA0F-B1568C5017A3",
+    "appVersion": "99.1.1",
+    "operatingSystem": "Android",
+    "Authorization": `Bearer ${jwtToken}`
+  };
 
-  const raw = JSON.stringify({
+  const data = {
     "sid": "4951091037",
     "pinHash": "62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64",
     "pushkey": ""
-  });
-  
+  };
+
   const requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
+    headers,
+    data,
+    method: 'post',
+    url: 'https://mw-api-preprod.e-kyash.com/api/qrpos-app/authorization',
+    responseType: 'json',
   };
 
   // send the request and return the response to the client
-  fetch("https://mw-api-preprod.e-kyash.com/api/qrpos-app/authorization", requestOptions)
-    .then(response => response.text())
-    .then(result => {
-      res.status(200).send(result);
+  axios(requestOptions)
+    .then(response => {
+      // Add CORS headers to the response
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+      res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+      res.status(200).send(response.data);
     })
     .catch(error => {
       console.log('error', error);
       res.status(500).send('An error occurred');
     });
-
-
-
 });
 
 function generateJwtToken(mobileNumber) {
