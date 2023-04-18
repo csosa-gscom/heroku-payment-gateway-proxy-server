@@ -82,7 +82,7 @@
 //Server is able to take in both json and xml request 
 const express = require("express");
 const cors = require('cors');
-const allowedOrigins = ['https://gs-com.bz/', 'https://digiwallet-payment-enabled.myshopify.com']
+const allowedOrigins = ['https://gs-com.bz/', 'https://digiwallet-payment-enabled.myshopify.com','https://digiwallet-script-test.myshopify.com/']
 const axios = require('axios');
 const xml2js = require('xml2js');
 const bodyParser = require('body-parser');
