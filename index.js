@@ -84,11 +84,10 @@ const express = require("express"); // http framework
 const cors = require('cors'); //CORS Policy
 const axios = require('axios'); //HTTP client for JavaScript.
 const xml2js = require('xml2js'); //xml parser
-const bodyParser = require('body-parser'); 
+const bodyParser = require('body-parser');
 const CryptoJS = require("crypto-js");
 
 const app = express();
-const parser = new xml2js.Parser();
 
 // Task #2
 // Currently cors is enabled by using the cors libraby however
@@ -103,9 +102,9 @@ const parser = new xml2js.Parser();
 app.use(cors()); //used to enable CORS for the Express application, which allows the client-side code to make requests to the server-side code from different domains.
 
 // middleware to parse XML requests
-app.use(bodyParser.raw({ type: 'text/xml' }));
+//app.use(bodyParser.raw({ type: 'text/xml' }));
 
-app.post('/send-xml', (req, res) => {
+app.post('/send-xml',bodyParser.raw({ type: 'text/xml' }), (req, res) => {
   const data = req.body;
 
   // Parse XML data into a JavaScript object
@@ -114,7 +113,7 @@ app.post('/send-xml', (req, res) => {
       res.status(500).send('An error occurred while parsing the request.');
     } else {
       // Modify the object properties as desired
-      if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTEXECTOSELF'){
+      if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTEXECTOSELF') {
         result.TCSRequest.UserName = '501203278252';
         result.TCSRequest.Password = '052004';
       } else if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTMERCHANT_OTP') {
@@ -149,8 +148,25 @@ app.post('/send-xml', (req, res) => {
   });
 });
 
-app.post('/authorization', (req, res) => {
-  console.log('working');
+app.post('/authorization', bodyParser.json(), (req, res) => {
+  const mobileNumber = req.body.mobile;
+  const CryptoJS = require("crypto-js");
+  var apiKey = "APPKEY17-02A8-4BAF-AA0F-B1258C5067A1";
+  var header = {
+    "alg": "HS256",
+    "typ": "JWT"
+  };
+  var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
+  var encodedHeader = CryptoJS.enc.Base64.stringify(stringifiedHeader);
+  var data = {
+    "mobile": mobileNumber
+  };
+  var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));
+  var encodedData = CryptoJS.enc.Base64.stringify(stringifiedData);
+  var token = encodedHeader + "." + encodedData;
+  var signature = CryptoJS.HmacSHA256(token, apiKey);
+  signature = CryptoJS.enc.Base64.stringify(signature);
+  var jwtToken = token + "." + signature;
 });
 
 
