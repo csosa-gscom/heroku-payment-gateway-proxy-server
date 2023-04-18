@@ -80,14 +80,22 @@
 
 //Ekyash + Digiwallet Proxy Server
 //Server is able to take in both json and xml request 
-const express = require("express"); // http framework
-const cors = require('cors'); //CORS Policy
-const axios = require('axios'); //HTTP client for JavaScript.
-const xml2js = require('xml2js'); //xml parser
+const express = require("express");
+const cors = require('cors');
+const axios = require('axios');
+const xml2js = require('xml2js');
 const bodyParser = require('body-parser');
 const CryptoJS = require("crypto-js");
 
 const app = express();
+
+const digiWalletUserName = '501203278252';
+const digiWalletPassword = '052004';
+const digiWalletBrandID = '977'
+const digiWalletDestinationAccount = '5012235128';
+
+const ekyashPinHash = '62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64';
+const ekyashSID = '4951091037';
 
 // Task #2
 // Currently cors is enabled by using the cors libraby however
@@ -104,7 +112,7 @@ app.use(cors()); //used to enable CORS for the Express application, which allows
 // middleware to parse XML requests
 //app.use(bodyParser.raw({ type: 'text/xml' }));
 
-app.post('/send-xml',bodyParser.raw({ type: 'text/xml' }), (req, res) => {
+app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
   const data = req.body;
 
   // Parse XML data into a JavaScript object
@@ -114,13 +122,13 @@ app.post('/send-xml',bodyParser.raw({ type: 'text/xml' }), (req, res) => {
     } else {
       // Modify the object properties as desired
       if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTEXECTOSELF') {
-        result.TCSRequest.UserName = '501203278252';
-        result.TCSRequest.Password = '052004';
+        result.TCSRequest.UserName = digiWalletUserName;
+        result.TCSRequest.Password = digiWalletPassword;
       } else if (result.TCSRequest.Function[0].$.name === 'SALESREQUESTMERCHANT_OTP') {
-        result.TCSRequest.UserName = '501203278252';
-        result.TCSRequest.Password = '052004';
-        result.TCSRequest.Function[0].Param1 = '977';
-        result.TCSRequest.Function[0].Param6 = '5012235128';
+        result.TCSRequest.UserName = digiWalletUserName;
+        result.TCSRequest.Password = digiWalletPassword;
+        result.TCSRequest.Function[0].Param1 = digiWalletBrandID;
+        result.TCSRequest.Function[0].Param6 = digiWalletDestinationAccount;
       }
 
 
@@ -150,7 +158,47 @@ app.post('/send-xml',bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 
 app.post('/authorization', bodyParser.json(), (req, res) => {
   const mobileNumber = req.body.mobile;
-  const CryptoJS = require("crypto-js");
+  const jwtToken = generateJwtToken(mobileNumber);
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Accept-Language", "en");
+  myHeaders.append("The-Timezone-IANA", "Belize");
+  myHeaders.append("WL", "bibi");
+  myHeaders.append("IMIE", "APPKEY17-07A8-4BAF-AA0F-B1568C5017A3");
+  myHeaders.append("appVersion", "99.1.1");
+  myHeaders.append("operatingSystem", "Android");
+  myHeaders.append("Authorization", `Bearer ${jwtToken}`);
+
+  const raw = JSON.stringify({
+    "sid": "4951091037",
+    "pinHash": "62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64",
+    "pushkey": ""
+  });
+  
+  const requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  // send the request and return the response to the client
+  fetch("https://mw-api-preprod.e-kyash.com/api/qrpos-app/authorization", requestOptions)
+    .then(response => response.text())
+    .then(result => {
+      res.status(200).send(result);
+    })
+    .catch(error => {
+      console.log('error', error);
+      res.status(500).send('An error occurred');
+    });
+
+
+
+});
+
+function generateJwtToken(mobileNumber) {
   var apiKey = "APPKEY17-02A8-4BAF-AA0F-B1258C5067A1";
   var header = {
     "alg": "HS256",
@@ -167,9 +215,8 @@ app.post('/authorization', bodyParser.json(), (req, res) => {
   var signature = CryptoJS.HmacSHA256(token, apiKey);
   signature = CryptoJS.enc.Base64.stringify(signature);
   var jwtToken = token + "." + signature;
-});
-
-
+  return jwtToken;
+}
 
 let port = process.env.PORT || 3000;
 app.listen(port, () => {
