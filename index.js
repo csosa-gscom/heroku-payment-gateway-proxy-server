@@ -81,7 +81,8 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/authorization', bodyParser.json(), (req, res) => {
-  const mobileNumber = req.body.mobile;
+  //const mobileNumber = req.body.mobile;
+  const mobileNumber = 5016134487;
   const jwtToken = generateJwtToken(mobileNumber);
 
   const headers = {
@@ -139,6 +140,11 @@ function generateJwtToken(mobileNumber) {
   var jwtToken = token + "." + signature;
   return jwtToken;
 }
+
+app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+
+});
+
 
 let port = process.env.PORT || 3000;
 app.listen(port, () => {
