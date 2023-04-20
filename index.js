@@ -18,9 +18,9 @@ const ekyashAppKey = 'APPKEY17-07A8-4BAF-AA0F-B1568C5017A3'
 const ekyashPinHash = '62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64';
 const ekyashSID = '4951091037';
 
-const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com','https://digiwallet-script-test.myshopify.com']
+const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com', 'https://digiwallet-script-test.myshopify.com']
 const corsOptions = {
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -30,7 +30,7 @@ const corsOptions = {
   methods: ['GET', 'POST']
 };
 
-app.use(cors(corsOptions)); 
+app.use(cors(corsOptions));
 
 // Create a root endpoint
 app.get('/', (req, res) => {
@@ -131,7 +131,7 @@ function generateJwtToken() {
     "sid": ekyashSID,
     "pinHash": ekyashPinHash,
     "pushkey": "{{pushkey}}"
-};
+  };
   var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));
   var encodedData = CryptoJS.enc.Base64.stringify(stringifiedData);
   var token = encodedHeader + "." + encodedData;
@@ -146,6 +146,19 @@ function generateJwtToken() {
 
 // Route to receive JSON data and proxy it to another URL
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+  const jwtToken = generateJwtToken();
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept-Language": "en",
+    "The-Timezone-IANA": "Belize",
+    "WL": "bibi",
+    "IMIE": ekyashAppKey,
+    "appVersion": "99.1.1",
+    "operatingSystem": "Android",
+    "Authorization": `Bearer ${jwtToken}`
+  };
+
   const requestData = req.body;
   // Make a POST request to the API with the received data
   axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData)
