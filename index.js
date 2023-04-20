@@ -81,9 +81,7 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/authorization', bodyParser.json(), (req, res) => {
-  //const mobileNumber = req.body.mobile;
-  const mobileNumber = 5016134487;
-  const jwtToken = generateJwtToken(mobileNumber);
+  const jwtToken = generateJwtToken();
 
   const headers = {
     "Content-Type": "application/json",
@@ -121,7 +119,7 @@ app.post('/authorization', bodyParser.json(), (req, res) => {
     });
 });
 
-function generateJwtToken(mobileNumber) {
+function generateJwtToken() {
 
   var header = {
     "alg": "HS256",
@@ -130,8 +128,10 @@ function generateJwtToken(mobileNumber) {
   var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));
   var encodedHeader = CryptoJS.enc.Base64.stringify(stringifiedHeader);
   var data = {
-    "mobile": mobileNumber
-  };
+    "sid": ekyashSID,
+    "pinHash": ekyashPinHash,
+    "pushkey": "{{pushkey}}"
+};
   var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));
   var encodedData = CryptoJS.enc.Base64.stringify(stringifiedData);
   var token = encodedHeader + "." + encodedData;
@@ -141,10 +141,23 @@ function generateJwtToken(mobileNumber) {
   return jwtToken;
 }
 
+//app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+//});
+
+// Route to receive JSON data and proxy it to another URL
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-
+  const requestData = req.body;
+  // Make a POST request to the API with the received data
+  axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData)
+    .then(response => {
+      // Return the response from the API back to the client
+      res.send(response.data);
+    })
+    .catch(error => {
+      // Handle errors
+      res.status(500).send(error);
+    });
 });
-
 
 let port = process.env.PORT || 3000;
 app.listen(port, () => {
