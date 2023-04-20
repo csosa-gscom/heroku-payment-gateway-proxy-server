@@ -80,7 +80,7 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
   });
 });
 
-app.post('/authorization', bodyParser.json(), (req, res) => {
+app.get('/authorization', (req, res) => {
   const jwtToken = generateJwtToken();
 
   const headers = {
