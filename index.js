@@ -17,6 +17,7 @@ const digiWalletDestinationAccount = '5012235128';
 const ekyashAppKey = 'APPKEY17-07A8-4BAF-AA0F-B1568C5017A3'
 const ekyashPinHash = '62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64';
 const ekyashSID = '4951091037';
+const jwtToken = generateJwtToken();
 
 const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com', 'https://digiwallet-script-test.myshopify.com']
 const corsOptions = {
@@ -81,7 +82,6 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.get('/authorization', (req, res) => {
-  const jwtToken = generateJwtToken();
 
   const headers = {
     "Content-Type": "application/json",
@@ -146,7 +146,6 @@ function generateJwtToken() {
 
 // Route to receive JSON data and proxy it to another URL
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-  const jwtToken = generateJwtToken();
 
   const headers = {
     "Content-Type": "application/json",
