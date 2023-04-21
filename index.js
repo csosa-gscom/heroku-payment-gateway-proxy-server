@@ -19,7 +19,7 @@ const ekyashPinHash = '62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3
 const ekyashSID = '4951091037';
 const jwtToken = generateJwtToken();
 
-const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com', 'https://digiwallet-script-test.myshopify.com']
+const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com', 'https://ekyash-integration-site.myshopify.com']
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -33,7 +33,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Create a root endpoint
 app.get('/', (req, res) => {
   res.send('Welcome to Ekyash + Digiwallet Proxy Server');
 });
@@ -142,10 +141,6 @@ function generateJwtToken() {
   return jwtToken;
 }
 
-//app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-//});
-
-// Route to receive JSON data and proxy it to another URL
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
 
   const headers = {
