@@ -180,11 +180,13 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
   axios(requestOptions)
     .then(response => {
       const session = response.data.session;
-  
+      console.log(session);
+
       const requestData = {
         ...invoiceData,
         ...session
       };
+      console.log(requestData);
 
       // Make a POST request to the API with the received data
       axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
