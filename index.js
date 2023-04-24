@@ -7,6 +7,7 @@ const xml2js = require('xml2js');
 const bodyParser = require('body-parser');
 const CryptoJS = require("crypto-js");
 
+const port = process.env.PORT || 3000;
 const app = express();
 
 const digiWalletUserName = '501203278252';
@@ -80,7 +81,73 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
   });
 });
 
-app.get('/authorization', (req, res) => {
+// app.get('/authorization', (req, res) => {
+
+//   const headers = {
+//     "Content-Type": "application/json",
+//     "Accept-Language": "en",
+//     "The-Timezone-IANA": "Belize",
+//     "WL": "bibi",
+//     "IMIE": ekyashAppKey,
+//     "appVersion": "99.1.1",
+//     "operatingSystem": "Android",
+//     "Authorization": `Bearer ${jwtToken}`
+//   };
+
+//   const data = {
+//     "sid": ekyashSID,
+//     "pinHash": ekyashPinHash,
+//     "pushkey": ""
+//   };
+
+//   const requestOptions = {
+//     headers,
+//     data,
+//     method: 'post',
+//     url: 'https://mw-api-preprod.e-kyash.com/api/qrpos-app/authorization',
+//     responseType: 'json',
+//   };
+
+//   // send the request and return the response to the client
+//   axios(requestOptions)
+//     .then(response => {
+//       const session = response.data.session;
+//       res.status(200).send({ session });
+//     })
+//     .catch(error => {
+//       console.log('error', error);
+//       res.status(500).send('An error occurred');
+//     });
+// });
+
+// app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+
+//   const headers = {
+//     "Content-Type": "application/json",
+//     "Accept-Language": "en",
+//     "The-Timezone-IANA": "Belize",
+//     "WL": "bibi",
+//     "IMIE": ekyashAppKey,
+//     "appVersion": "99.1.1",
+//     "operatingSystem": "Android",
+//     "Authorization": `Bearer ${jwtToken}`
+//   };
+
+//   const requestData = req.body;
+//   // Make a POST request to the API with the received data
+//   axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
+//     .then(response => {
+//       // Return the response from the API back to the client
+//       res.send(response.data);
+//     })
+//     .catch(error => {
+//       // Handle errors
+//       res.status(500).send(error);
+//     });
+// });
+
+
+app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
 
   const headers = {
     "Content-Type": "application/json",
@@ -111,12 +178,31 @@ app.get('/authorization', (req, res) => {
   axios(requestOptions)
     .then(response => {
       const session = response.data.session;
-      res.status(200).send({ session });
+    
+      //const requestData = req.body;
+      const requestData = {
+        ...req.body,
+        ...sessionData
+      };
+
+      // Make a POST request to the API with the received data
+      axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
+        .then(response => {
+          // Return the response from the API back to the client
+          res.send(response.data);
+        })
+        .catch(error => {
+          // Handle errors
+          res.status(500).send(error);
+        });
     })
     .catch(error => {
       console.log('error', error);
       res.status(500).send('An error occurred');
     });
+});
+
+app.post('/payment-status', bodyParser.json(), (req, res) => {
 });
 
 function generateJwtToken() {
@@ -141,36 +227,6 @@ function generateJwtToken() {
   return jwtToken;
 }
 
-app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-
-  const headers = {
-    "Content-Type": "application/json",
-    "Accept-Language": "en",
-    "The-Timezone-IANA": "Belize",
-    "WL": "bibi",
-    "IMIE": ekyashAppKey,
-    "appVersion": "99.1.1",
-    "operatingSystem": "Android",
-    "Authorization": `Bearer ${jwtToken}`
-  };
-
-  const requestData = req.body;
-  // Make a POST request to the API with the received data
-  axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
-    .then(response => {
-      // Return the response from the API back to the client
-      res.send(response.data);
-    })
-    .catch(error => {
-      // Handle errors
-      res.status(500).send(error);
-    });
-});
-
-app.post('/payment-status', bodyParser.json(), (req, res) => {
-});
-
-let port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
 });
