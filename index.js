@@ -34,7 +34,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
-  res.send('Welcome to Ekyash + Digiwallet Proxy Server');
+  res.send('GS-COM Proxy Server; Up and Running');
 });
 
 app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
@@ -165,6 +165,9 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
       // Handle errors
       res.status(500).send(error);
     });
+});
+
+app.post('/payment-status', bodyParser.json(), (req, res) => {
 });
 
 let port = process.env.PORT || 3000;
