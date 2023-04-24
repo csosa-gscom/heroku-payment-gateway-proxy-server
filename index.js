@@ -179,12 +179,14 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
   // send the request and return the response to the client
   axios(requestOptions)
     .then(response => {
-      const session = response.data.session;
-      console.log(session);
+      const sessionData = {
+        "session": response.data.session
+      }
+      console.log(sessionData);
 
       const requestData = {
         ...invoiceData,
-        ...session
+        ...sessionData
       };
       console.log(requestData);
 
