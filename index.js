@@ -149,6 +149,8 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
 
+  const invoiceData = req.body;
+
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
@@ -178,11 +180,10 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
   axios(requestOptions)
     .then(response => {
       const session = response.data.session;
-    
-      //const requestData = req.body;
+  
       const requestData = {
-        ...req.body,
-        ...sessionData
+        ...invoiceData,
+        ...session
       };
 
       // Make a POST request to the API with the received data
