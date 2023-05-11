@@ -139,7 +139,11 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
     });
 });
 
+var status;
 app.post('/payment-status', bodyParser.json(), (req, res) => {
+  status = req.body;
+  res.sendStatus(200);
+  console.log(status);
 });
 
 function generateJwtToken() {
