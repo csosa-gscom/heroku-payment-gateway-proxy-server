@@ -16,8 +16,8 @@ const digiWalletBrandID = '977'
 const digiWalletDestinationAccount = '5012235128';
 
 const ekyashAppKey = 'APPKEY17-07A8-4BAF-AA0F-B1568C5017A3'
-const ekyashPinHash = '62baa44d7cf5b1359f19b1f536512dbe5713a94b04aeda70bf64456d3615eb64';
-const ekyashSID = '4951091037';
+const ekyashPinHash = '38e7de029369de8343bfb7b196bf4c0cf5f2f10caa71fa73965831d8b8e4cda0';
+const ekyashSID = '4981612327';
 const jwtToken = generateJwtToken();
 
 const allowedOrigins = ['https://gs-com.bz', 'https://digiwallet-payment-enabled.myshopify.com', 'https://ekyash-integration-site.myshopify.com']
@@ -106,7 +106,7 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
     headers,
     data,
     method: 'post',
-    url: 'https://mw-api-preprod.e-kyash.com/api/qrpos-app/authorization',
+    url: 'https://mw-api.e-kyash.com/api/qrpos-app/authorization',
     responseType: 'json',
   };
 
@@ -123,7 +123,7 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
       };
 
       // Make a POST request to the API with the received data
-      axios.post('https://mw-api-preprod.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
+      axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
         .then(response => {
           // Return the response from the API back to the client
           res.send(response.data);
