@@ -82,21 +82,23 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+  console.log('create new incoice endpoint started');
   const invoiceData = req.body;
-  
+  console.log('invoice Data: ', invoiceData);
   makeAuthApiCall((error, session)=>{
-
+    console.log('makeAuthApiCall started');
     if (error) {
       // Handle the error in some way, e.g. send an error response to the client
       return res.status(500).json({ error: "Failed to authenticate with e-kyash API" });
     }
 
     makeInvoiceApiCall(session.session,(error, invoice)=>{
+      console.log('make Invoice Api Call started');
       if (error) {
         // Handle the error in some way, e.g. send an error response to the client
         return res.status(500).json({ error: "Failed to create new invoice with e-kyash API" });
       }
-
+      console.log(invoice);
       // Send the invoice data back to the client
       res.json(invoice);
     });
@@ -131,6 +133,7 @@ function makeAuthApiCall(callback){
 
   axios(requestOptions)
     .then(response => {
+      console.log('inside makeAuthApiCall, the response.data.session is:',response.data.session);
       callback(null, response.data.session);
     })
     .catch(error => {
@@ -156,6 +159,7 @@ function makeInvoiceApiCall(sessionID, callback){
         // Call the callback function with the error object
         callback(new Error(response.data.error));
       } else {
+        console.log('inside makeInvoice call, the response.data.invoice is:',response.data.invoice);
         // Call the callback function with the invoice data
         callback(null, response.data.invoice);
       }
