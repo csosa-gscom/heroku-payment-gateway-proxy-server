@@ -82,17 +82,17 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-  console.log('create new incoice endpoint started');
-  const invoiceData = req.body;
+  console.log('1 create new incoice endpoint started');
+  var invoiceData = req.body;
   console.log('invoice Data: ', invoiceData);
   makeAuthApiCall((error, session)=>{
-    console.log('makeAuthApiCall started');
+    console.log('2 makeAuthApiCall started');
     if (error) {
       // Handle the error in some way, e.g. send an error response to the client
       return res.status(500).json({ error: "Failed to authenticate with e-kyash API" });
     }
 
-    makeInvoiceApiCall(session.session,(error, invoice)=>{
+    makeInvoiceApiCall(session.session,invoiceData,(error, invoice)=>{
       console.log('make Invoice Api Call started');
       if (error) {
         // Handle the error in some way, e.g. send an error response to the client
@@ -141,7 +141,7 @@ function makeAuthApiCall(callback){
     });
 }
 
-function makeInvoiceApiCall(sessionID, callback){
+function makeInvoiceApiCall(sessionID, invoiceData,callback){
 
   const sessionData = {
     "session": sessionID
