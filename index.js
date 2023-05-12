@@ -82,17 +82,17 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-  console.log('1 create new incoice endpoint started');
+  console.log('1. /create-new-invoice endpoint started');
   var invoiceData = req.body;
   console.log('invoice Data: ', invoiceData);
   makeAuthApiCall((error, session)=>{
-    console.log('2 makeAuthApiCall started');
+    console.log('2. makeAuthApiCall called');
     if (error) {
       // Handle the error in some way, e.g. send an error response to the client
       return res.status(500).json({ error: "Failed to authenticate with e-kyash API" });
     }
 
-    makeInvoiceApiCall(session.session,invoiceData,(error, invoice)=>{
+    makeInvoiceApiCall(session.session, invoiceData, (error, invoice)=>{
       console.log('make Invoice Api Call started');
       if (error) {
         // Handle the error in some way, e.g. send an error response to the client
@@ -106,6 +106,7 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
 });
 
 function makeAuthApiCall(callback){
+  console.log('function makeAuthApiCall started');
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
@@ -133,26 +134,27 @@ function makeAuthApiCall(callback){
 
   axios(requestOptions)
     .then(response => {
-      console.log('inside makeAuthApiCall, the response.data.session is:',response.data.session);
+      console.log('inside function makeAuthApiCall, the response.data.session is:',response.data.session);
       callback(null, response.data.session);
+      console.log('inside function makeAuthApiCall, callback sent');
     })
     .catch(error => {
       callback(error);
     });
 }
 
-function makeInvoiceApiCall(sessionID, invoiceData,callback){
-  
+function makeInvoiceApiCall(sessionID, invoiceData, callback){
+  console.log('function makeInvoiceApiCall started');
   const sessionData = {
     "session": sessionID
   }
-
   console.log('session Data:',sessionData);
   const requestData = {
     ...invoiceData,
     ...sessionData
   };
   console.log('requestData:',requestData);
+  
   axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
     .then(response => {
       // Check if there was an error in the response
