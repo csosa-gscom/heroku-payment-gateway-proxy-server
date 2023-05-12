@@ -146,6 +146,10 @@ app.post('/payment-status', bodyParser.json(), (req, res) => {
   console.log(status);
 });
 
+app.get('/get-payment-status', (req, res) => {
+  res.send(status);
+});
+
 function generateJwtToken() {
 
   var header = {
