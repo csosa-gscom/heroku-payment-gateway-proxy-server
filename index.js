@@ -82,9 +82,28 @@ app.post('/send-xml', bodyParser.raw({ type: 'text/xml' }), (req, res) => {
 });
 
 app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
-
   const invoiceData = req.body;
+  
+  makeAuthApiCall((error, session)=>{
 
+    if (error) {
+      // Handle the error in some way, e.g. send an error response to the client
+      return res.status(500).json({ error: "Failed to authenticate with e-kyash API" });
+    }
+
+    makeInvoiceApiCall(session.session,(error, invoice)=>{
+      if (error) {
+        // Handle the error in some way, e.g. send an error response to the client
+        return res.status(500).json({ error: "Failed to create new invoice with e-kyash API" });
+      }
+
+      // Send the invoice data back to the client
+      res.json(invoice);
+    });
+  });
+});
+
+function makeAuthApiCall(callback){
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
@@ -110,46 +129,48 @@ app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
     responseType: 'json',
   };
 
-  // send the request and return the response to the client
   axios(requestOptions)
     .then(response => {
-      const sessionData = {
-        "session": response.data.session
-      }
-
-      const requestData = {
-        ...invoiceData,
-        ...sessionData
-      };
-
-      // Make a POST request to the API with the received data
-      axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
-        .then(response => {
-          // Return the response from the API back to the client
-          res.send(response.data);
-        })
-        .catch(error => {
-          // Handle errors
-          res.status(500).send(error);
-        });
+      callback(null, response.data.session);
     })
     .catch(error => {
-      console.log('error', error);
-      res.status(500).send('An error occurred');
+      callback(error);
     });
-});
+}
 
-var status;
-app.post('/payment-status', bodyParser.json(), (req, res) => {
-  status = req.body;
-  res.sendStatus(200);
-  console.log(status);
-});
+function makeInvoiceApiCall(sessionID, callback){
 
-app.get('/get-payment-status', (req, res) => {
-  res.send(status);
-  console.log(status);
-});
+  const sessionData = {
+    "session": sessionID
+  }
+
+  const requestData = {
+    ...invoiceData,
+    ...sessionData
+  };
+
+  axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
+    .then(response => {
+      // Check if there was an error in the response
+      if (response.data.error) {
+        // Call the callback function with the error object
+        callback(new Error(response.data.error));
+      } else {
+        // Call the callback function with the invoice data
+        callback(null, response.data.invoice);
+      }
+    })
+    .catch(error => {
+      // Call the callback function with the error object
+      callback(error);
+    });
+}
+
+
+
+
+
+
 
 function generateJwtToken() {
 
@@ -175,4 +196,83 @@ function generateJwtToken() {
 
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
+});
+
+//
+///
+///
+/////
+//////
+///////
+///////
+var status;
+app.post('/payment-status', bodyParser.json(), (req, res) => {
+  status = req.body;
+  res.sendStatus(200);
+  console.log(status);
+});
+
+app.get('/get-payment-status', (req, res) => {
+  res.send(status);
+  console.log(status);
+});
+
+app.post('/create-new-invoice', bodyParser.json(), (req, res) => {
+  //gets data from client such orderID, amount, and currency
+  const invoiceData = req.body;
+
+  //creates appropriate header to be used for /authorization api call to e-kyash.com
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept-Language": "en",
+    "The-Timezone-IANA": "Belize",
+    "WL": "bibi",
+    "IMIE": ekyashAppKey,
+    "appVersion": "99.1.1",
+    "operatingSystem": "Android",
+    "Authorization": `Bearer ${jwtToken}`
+  };
+
+  //apporiate data to be sent to /authorization api call to e-kyash
+  const data = {
+    "sid": ekyashSID,
+    "pinHash": ekyashPinHash,
+    "pushkey": ""
+  };
+
+  const requestOptions = {
+    headers,
+    data,
+    method: 'post',
+    url: 'https://mw-api.e-kyash.com/api/qrpos-app/authorization',
+    responseType: 'json',
+  };
+
+//does api call
+  axios(requestOptions)
+    .then(response => {
+      
+      //Authorization api call returns session ID, we store that value
+      const sessionData = {
+        "session": response.data.session
+      }
+//create new data using invoice data and adding session ID to it
+      const requestData = {
+        ...invoiceData,
+        ...sessionData
+      };
+//create-new-invoice api call
+      axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
+        .then(response => {
+          //returns data back to client which is link to make payment
+          res.send(response.data);
+        })
+        .catch(error => {
+          res.status(500).send(error);
+        });
+    })
+    .catch(error => {
+      console.log('error', error);
+      res.status(500).send('An error occurred');
+    });
 });
