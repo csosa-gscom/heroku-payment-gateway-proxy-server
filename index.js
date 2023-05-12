@@ -142,16 +142,17 @@ function makeAuthApiCall(callback){
 }
 
 function makeInvoiceApiCall(sessionID, invoiceData,callback){
-
+  
   const sessionData = {
     "session": sessionID
   }
 
+  console.log('session Data:',sessionData);
   const requestData = {
     ...invoiceData,
     ...sessionData
   };
-
+  console.log('requestData:',requestData);
   axios.post('https://mw-api.e-kyash.com/api/qrpos-app/create-new-invoice', requestData, { headers })
     .then(response => {
       // Check if there was an error in the response
